@@ -1,6 +1,7 @@
 package dev.aycoder.cardgame;
 
 import dev.aycoder.cardgame.display.Display;
+import dev.aycoder.cardgame.gfx.Assets;
 import dev.aycoder.cardgame.gfx.ImageLoader;
 import dev.aycoder.cardgame.gfx.SpriteSheet;
 
@@ -21,8 +22,6 @@ public class Game implements Runnable
     private BufferStrategy bs;
     private Graphics g;
 
-    private BufferedImage testImage;
-    private SpriteSheet sheet;
 
     public Game( String title, int width, int height)
     {
@@ -58,8 +57,7 @@ public class Game implements Runnable
     private void init()
     {
         display = new Display( title, width, height);
-        testImage = ImageLoader.loadImage("/textures/cards.png");
-        sheet = new SpriteSheet(testImage);
+        Assets.init();
     }
 
     private void tick()
@@ -80,7 +78,8 @@ public class Game implements Runnable
         //Clears Screen
         g.clearRect( 0, 0, width, height);
         //Draw Here
-        g.drawImage( sheet.crop(0,0,48,64), 0, 0, null);
+        BufferedImage sprite = Assets.cardImages[3][3];
+        g.drawImage( sprite, 0, 0, null);
         //End of Drawing
         bs.show();
         g.dispose();
