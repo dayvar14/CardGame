@@ -4,6 +4,9 @@ import dev.aycoder.cardgame.display.Display;
 import dev.aycoder.cardgame.gfx.Assets;
 import dev.aycoder.cardgame.gfx.ImageLoader;
 import dev.aycoder.cardgame.gfx.SpriteSheet;
+import dev.aycoder.cardgame.states.GameState;
+import dev.aycoder.cardgame.states.MenuState;
+import dev.aycoder.cardgame.states.State;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
@@ -22,7 +25,8 @@ public class Game implements Runnable
     private BufferStrategy bs;
     private Graphics g;
 
-
+    //States
+    private State gameState;
     public Game( String title, int width, int height)
     {
         this.width = width;
@@ -58,10 +62,19 @@ public class Game implements Runnable
     {
         display = new Display( title, width, height);
         Assets.init();
+
+        MenuState menuState = new MenuState();
+        GameState gameState = new GameState();
+        State.setState(menuState);
     }
+
 
     private void tick()
     {
+        if(State.getState() != null)
+        {
+            State.getState().tick();
+        }
 
     }
 
@@ -78,8 +91,10 @@ public class Game implements Runnable
         //Clears Screen
         g.clearRect( 0, 0, width, height);
         //Draw Here
-        BufferedImage sprite = Assets.cardImages[3][3];
-        g.drawImage( sprite, 0, 0, null);
+        if(State.getState() != null)
+        {
+            State.getState().render(g);
+        }
         //End of Drawing
         bs.show();
         g.dispose();
@@ -89,10 +104,34 @@ public class Game implements Runnable
     {
         init();
 
+        int fps = 60;
+        double timePerTick = 1000000000 / fps;
+        double delta = 0;
+        long nowTime;
+        long lastTime = System.nanoTime();
+        long timer = 0;
+        int ticks = 0;
+
         while( running == true)
         {
-            tick();
-            render();
+            nowTime = System.nanoTime();
+            delta += ( nowTime - lastTime) / timePerTick;
+            timer += nowTime - lastTime;
+            lastTime = nowTime;
+            if (delta >= 1)
+            {
+                tick();
+                render();
+                ticks++;
+                delta--;
+            }
+
+            if( timer >= 1000000000)
+            {
+                System.out.println("Ticks and Frames: " + ticks);
+                ticks = 0;
+                timer = 0;
+            }
         }
 
         stop();
