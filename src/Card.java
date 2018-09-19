@@ -1,4 +1,4 @@
-public class Card extends ItemType
+public class Card extends Item
 {
     private static int count = 0;
     private int value;
